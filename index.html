@@ -158,15 +158,34 @@
   <footer id="kontakt" class="sec-pad" style="background:#F3F1EB; color:#3A453C; padding:84px 0 38px; position:relative; overflow:hidden; border-top:1px solid rgba(30,43,35,0.12)">
     <div style="position:absolute; inset:0; background:url(assets/topo.svg) center/cover no-repeat; opacity:0.35; pointer-events:none"></div>
     <div class="pad-x" style="position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:0 28px">
-      <div class="footer-grid" style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:48px; align-items:end; padding-bottom:50px; border-bottom:1px solid rgba(30,43,35,0.15)">
+      <div class="footer-grid" style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:48px; align-items:start; padding-bottom:50px; border-bottom:1px solid rgba(30,43,35,0.15)">
         <div>
           <div style="font-family:'Space Mono',monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:#B05226; margin-bottom:16px">// CHODŹ Z NAMI W GÓRY</div>
           <h2 style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:clamp(32px,4.6vw,52px); line-height:1; margin:0 0 14px; color:#1E2B23">Spotkajmy się w eterze</h2>
           <p style="font-size:16px; line-height:1.6; margin:0; max-width:440px; color:#54604F">Ta strona akurat jest w&nbsp;budowie,&nbsp;ale my jesteśmy i mamy się dobrze. Chcesz dołączyć, zapytać o&nbsp;coś, albo umówić wspólną aktywację? Napisz do nas.</p>
         </div>
-        <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start">
-          <a id="mailLink" href="#" style="display:inline-flex; align-items:center; gap:9px; background:#DE5B27; color:#1B130C; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:16px; padding:13px 22px; border-radius:3px; text-decoration:none"><span>✉</span><span>KONTAKT@SOTAPOLAND.PL</span></a>
-          <span style="font-family:'Space Mono',monospace; font-size:12px; color:#7E8C76; letter-spacing:0.05em">sotapoland.pl</span>
+        <div>
+          <!-- Formularz kontaktowy. action -> Twój endpoint Formspree (patrz instrukcja niżej) -->
+          <form id="contactForm" action="https://formspree.io/f/xeebjwwp" method="POST" style="display:flex; flex-direction:column; gap:14px">
+            <div>
+              <label for="cf-name" style="display:block; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; font-size:12.5px; color:#54604F; margin-bottom:6px">Imię / znak</label>
+              <input id="cf-name" name="name" type="text" autocomplete="name" required style="width:100%; font-family:'Barlow',sans-serif; font-size:15px; color:#26302A; background:#FFFFFF; border:1px solid rgba(30,43,35,0.18); border-radius:3px; padding:11px 13px; outline:none">
+            </div>
+            <div>
+              <label for="cf-email" style="display:block; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; font-size:12.5px; color:#54604F; margin-bottom:6px">E-mail</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required style="width:100%; font-family:'Barlow',sans-serif; font-size:15px; color:#26302A; background:#FFFFFF; border:1px solid rgba(30,43,35,0.18); border-radius:3px; padding:11px 13px; outline:none">
+            </div>
+            <div>
+              <label for="cf-msg" style="display:block; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; font-size:12.5px; color:#54604F; margin-bottom:6px">Wiadomość</label>
+              <textarea id="cf-msg" name="message" rows="4" required style="width:100%; font-family:'Barlow',sans-serif; font-size:15px; line-height:1.5; color:#26302A; background:#FFFFFF; border:1px solid rgba(30,43,35,0.18); border-radius:3px; padding:11px 13px; outline:none; resize:vertical"></textarea>
+            </div>
+            <!-- honeypot antyspamowy: boty wypełnią, ludzie nie widzą -->
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px" aria-hidden="true">
+            <button type="submit" style="display:inline-flex; align-items:center; justify-content:center; gap:9px; background:#DE5B27; color:#1B130C; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:16px; padding:13px 22px; border:none; border-radius:3px; cursor:pointer">
+              <span>✉</span><span>Wyślij</span>
+            </button>
+            <output id="cf-status" aria-live="polite" style="display:block; margin:0; min-height:18px; font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.04em; color:#7E8C76"></output>
+          </form>
         </div>
       </div>
 
@@ -181,11 +200,41 @@
   </footer>
 
   <script>
-    // Składanie adresu e-mail po stronie klienta (ochrona przed botami spamowymi)
+    // Wysyłka formularza przez fetch (AJAX) — użytkownik zostaje na stronie.
+    // Backend: Formspree. Podmień action formularza na swój endpoint: https://formspree.io/f/TWOJ_ID
     (function () {
-      var u = 'kontakt', d = 'sotapoland' + '.' + 'pl';
-      var a = document.getElementById('mailLink');
-      if (a) a.href = 'mailto:' + u + '@' + d;
+      var form = document.getElementById('contactForm');
+      if (!form) return;
+      var status = document.getElementById('cf-status');
+      var btn = form.querySelector('button[type="submit"]');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.style.cursor = 'default'; }
+        status.style.color = '#7E8C76';
+        status.textContent = 'Wysyłanie…';
+
+        fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        }).then(function (res) {
+          if (res.ok) {
+            form.reset();
+            status.style.color = '#2E7D32';
+            status.textContent = 'Dzięki! Wiadomość wysłana — odezwiemy się. 73!';
+          } else {
+            return res.json().then(function (data) {
+              throw new Error(data && data.errors ? data.errors.map(function (x) { return x.message; }).join(', ') : 'błąd');
+            });
+          }
+        }).catch(function () {
+          status.style.color = '#B05226';
+          status.textContent = 'Coś nie pyklo. Napisz wprost: kontakt@sotapoland.pl';
+        }).finally(function () {
+          if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+        });
+      });
     })();
   </script>
 </body>
