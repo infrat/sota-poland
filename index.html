@@ -182,7 +182,7 @@
             <!-- honeypot antyspamowy: boty wypełnią, ludzie nie widzą -->
             <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px" aria-hidden="true">
             <button type="submit" style="display:inline-flex; align-items:center; justify-content:center; gap:9px; background:#DE5B27; color:#1B130C; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:16px; padding:13px 22px; border:none; border-radius:3px; cursor:pointer">
-              <span>✉</span><span>Wyślij</span>
+              <span>Wyślij</span>
             </button>
             <output id="cf-status" aria-live="polite" style="display:block; margin:0; min-height:18px; font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.04em; color:#7E8C76"></output>
           </form>
@@ -194,7 +194,10 @@
           <img src="assets/logo.png" alt="SOTA Polska — logo" width="32" style="display:block; height:auto">
           <span style="font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:0.05em; font-size:15px; color:#3A453C">SOTA POLAND&nbsp;· OT 12 PZK</span>
         </div>
-        <div style="font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.06em; color:#7E8C76">© 2026&nbsp;· SP9HGN&nbsp;· 73!</div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px">
+          <div style="font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.06em; color:#7E8C76">© 2026&nbsp;· SP9HGN&nbsp;· 73!</div>
+          <a href="https://github.com/infrat/sota-poland/commit/__BUILD_COMMIT__" target="_blank" rel="noopener" style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.05em; color:#9AA593; text-decoration:none">build&nbsp;<span style="color:#7E8C76">__BUILD_COMMIT_SHORT__</span></a>
+        </div>
       </div>
     </div>
   </footer>
